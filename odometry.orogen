@@ -1,0 +1,70 @@
+name "odometry"
+version '0.1'
+
+import_types_from 'base'
+using_library "odometry"
+using_library "envire"
+
+import_types_from 'odometry/Configuration.hpp'
+import_types_from 'odometry/ContactState.hpp'
+
+typekit.export_types '/odometry/Configuration', '/odometry/BodyContactState'
+
+task_context 'Generic' do
+    abstract
+    needs_configuration
+
+    ##########################
+    # configuration parameters 
+    ##########################
+
+    property('odometry_config', '/odometry/Configuration').
+	doc 'configuration struct for the asguard odometry class'
+
+    property('body_frame', '/std/string', 'body').
+        doc "the frame name for the body frame"
+    property('odometry_frame', '/std/string', 'odometry').
+        doc "the frame name for the odometry frame"
+
+    ##########################
+    # i/o ports 
+    ##########################
+
+    input_port('orientation_samples', '/base/samples/RigidBodyState').
+        needs_reliable_connection.
+        doc 'timestamped orientation readings'
+
+    output_port('odometry_samples', '/base/samples/RigidBodyState').
+	doc 'timestamped absolute odometry given in an arbitrary fixed frame'
+
+    output_port('odometry_delta_samples', '/base/samples/RigidBodyState').
+	doc 'timestamped odometry sample given as relative transformation since the last orientation sample. The transformation is from the current body frame to the previous frame.'
+
+    port_driven 'orientation_samples'
+end
+
+task_context 'ContactPointTask' do
+    doc "contact-point odometry"
+    subclasses "Generic"
+
+    ##########################
+    # i/o ports 
+    ##########################
+
+    input_port('contact_samples', '/odometry/BodyContactState').
+        needs_reliable_connection.
+	doc 'samples providing information on the contact of the body with the environment'
+
+    ##########################
+    # aggregator parameters
+    ##########################
+
+    transformer() do
+	transformation("body", "imu_enu")
+
+	align_port("contact_samples", 0.01)
+	align_port("orientation_samples", 0.01)
+	max_latency(0.1)
+    end
+end
+
