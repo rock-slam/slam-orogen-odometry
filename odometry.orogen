@@ -7,6 +7,7 @@ using_library "envire"
 
 import_types_from 'odometry/Configuration.hpp'
 import_types_from 'odometry/ContactState.hpp'
+import_types_from 'odometry/BodyState.hpp'
 
 typekit.export_types '/odometry/Configuration', '/odometry/BodyContactState'
 
@@ -23,8 +24,10 @@ task_context 'Generic' do
 
     property('body_frame', '/std/string', 'body').
         doc "the frame name for the body frame"
+
     property('odometry_frame', '/std/string', 'odometry').
         doc "the frame name for the odometry frame"
+
 
     ##########################
     # i/o ports 
@@ -41,6 +44,46 @@ task_context 'Generic' do
 	doc 'timestamped odometry sample given as relative transformation since the last orientation sample. The transformation is from the current body frame to the previous frame.'
 
     port_driven 'orientation_samples'
+end
+
+task_context 'Skid4OdometryTask' do
+    doc "normal skid-steering odometry"
+    subclasses "Generic"
+
+    ##########################
+    # configuration parameters 
+    ##########################
+
+    property('wheelRadiusAvg', 'double').
+	doc 'wheel radius avarage'
+
+    property('trackWidth', 'double').
+	doc 'track width'
+
+    property('wheelBase', 'double').
+	doc 'wheel base'
+
+    ##########################
+    # aggregator parameters
+    ##########################
+
+    stream_aligner() do
+	align_port("hbridge_samples", 0.001)
+	align_port("orientation_samples", 0.01)
+	max_latency(0.1)
+    end
+
+    ##########################
+    # i/o ports 
+    ##########################
+
+    input_port('hbridge_samples', '/base/actuators/Status').
+        needs_reliable_connection.
+	doc 'timestamped motor state samples providing odometry information.'
+   
+    output_port('bodystate_samples', '/odometry/BodyState').
+	doc 'timestamped robot bodystate information'
+
 end
 
 task_context 'ContactPointTask' do
