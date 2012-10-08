@@ -34,8 +34,8 @@ namespace odometry {
 	/** Odometry object */
 	boost::shared_ptr<odometry::Skid4Odometry> od;
 
-        virtual void hbridge_samplesCallback(const base::Time &ts, const ::base::actuators::Status &hbridge_samples_sample);
-        virtual void orientation_samplesCallback(const base::Time &ts, const ::base::samples::RigidBodyState &orientation_samples_sample);
+	virtual void actuator_samplesTransformerCallback(const base::Time& ts, const base::actuators::Status& actuator_samples_sample);
+        void body2imu_enuTransformerCallback(const base::Time &ts);
 
     public:
         /** TaskContext constructor for Skid4OdometryTask

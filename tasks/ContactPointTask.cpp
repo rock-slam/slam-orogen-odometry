@@ -25,7 +25,7 @@ void ContactPointTask::contact_samplesTransformerCallback(const base::Time &ts, 
     contactState = contact_samples_sample;
 }
 
-void ContactPointTask::orientation_samplesTransformerCallback(const base::Time &ts, const ::base::samples::RigidBodyState &orientation_samples_sample)
+void ContactPointTask::body2imu_enuTransformerCallback(const base::Time& ts)
 {
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
@@ -117,6 +117,8 @@ bool ContactPointTask::startHook()
     // reset absolute odometry integration
     lastBody2Odometry = envire::TransformWithUncertainty::Identity();
 
+    _body2imu_enu.registerUpdateCallback(boost::bind(&ContactPointTask::body2imu_enuTransformerCallback, this, _1));
+    
     return true;
 }
 // void ContactPointTask::updateHook()

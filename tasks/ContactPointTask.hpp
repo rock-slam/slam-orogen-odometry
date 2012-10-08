@@ -53,7 +53,7 @@ namespace odometry {
                 base::Vector3d const& angular_velocity = base::unknown<base::Vector3d>());
 
         void contact_samplesTransformerCallback(const base::Time &ts, const ::odometry::BodyContactState &contact_samples_sample);
-        void orientation_samplesTransformerCallback(const base::Time &ts, const ::base::samples::RigidBodyState &orientation_samples_sample);
+        void body2imu_enuTransformerCallback(const base::Time &ts);
 
     public:
         /** TaskContext constructor for ContactPointTask

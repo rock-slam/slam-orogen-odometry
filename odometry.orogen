@@ -33,17 +33,12 @@ task_context 'Generic' do
     # i/o ports 
     ##########################
 
-    input_port('orientation_samples', '/base/samples/RigidBodyState').
-        needs_reliable_connection.
-        doc 'timestamped orientation readings'
-
     output_port('odometry_samples', '/base/samples/RigidBodyState').
 	doc 'timestamped absolute odometry given in an arbitrary fixed frame'
 
     output_port('odometry_delta_samples', '/base/samples/RigidBodyState').
 	doc 'timestamped odometry sample given as relative transformation since the last orientation sample. The transformation is from the current body frame to the previous frame.'
 
-    port_driven 'orientation_samples'
 end
 
 task_context 'Skid4OdometryTask' do
@@ -64,26 +59,27 @@ task_context 'Skid4OdometryTask' do
 	doc 'wheel base'
 
     ##########################
-    # aggregator parameters
-    ##########################
-
-    stream_aligner() do
-	align_port("hbridge_samples", 0.001)
-	align_port("orientation_samples", 0.01)
-	max_latency(0.1)
-    end
-
-    ##########################
     # i/o ports 
     ##########################
 
-    input_port('hbridge_samples', '/base/actuators/Status').
+    input_port('actuator_samples', '/base/actuators/Status').
         needs_reliable_connection.
 	doc 'timestamped motor state samples providing odometry information.'
    
     output_port('bodystate_samples', '/odometry/BodyState').
 	doc 'timestamped robot bodystate information'
 
+    ##########################
+    # aggregator parameters
+    ##########################
+
+    transformer() do
+	transformation("body", "imu_enu")
+
+	align_port("actuator_samples", 0.001)
+	max_latency(0.1)
+    end
+    port_driven 'dynamic_transformations'
 end
 
 task_context 'ContactPointTask' do
@@ -106,8 +102,9 @@ task_context 'ContactPointTask' do
 	transformation("body", "imu_enu")
 
 	align_port("contact_samples", 0.01)
-	align_port("orientation_samples", 0.01)
 	max_latency(0.1)
     end
+
+    port_driven 'dynamic_transformations'
 end
 
