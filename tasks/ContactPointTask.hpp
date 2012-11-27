@@ -14,7 +14,7 @@ namespace odometry
 namespace base
 {
     template<>
-    base::Vector3d unknown<base::Vector3d>()
+    inline base::Vector3d unknown<base::Vector3d>()
     {
         return base::Vector3d::Ones() * base::unknown<double>();
     }
