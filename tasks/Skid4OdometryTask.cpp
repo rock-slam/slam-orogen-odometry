@@ -34,7 +34,7 @@ void Skid4OdometryTask::actuator_samplesTransformerCallback(const base::Time &ts
 void Skid4OdometryTask::body2imu_enuTransformerCallback(const base::Time& ts)
 {
     //wait until we got an actuator status
-    if(od->state.isValid())
+    if(!od->state.isValid())
     {    
 	return;
     }
