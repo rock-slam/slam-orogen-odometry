@@ -99,10 +99,11 @@ task_context 'ContactPointTask' do
     ##########################
 
     transformer() do
-	transformation("body", "imu_enu")
+	transform("body", "imu_enu")
 
-	align_port("contact_samples", 0.01)
+	align_port("contact_samples", 0.01) 
 	max_latency(0.1)
+	transform_priority(10)
     end
 
     port_driven 'dynamic_transformations'
