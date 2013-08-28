@@ -2,7 +2,7 @@
 
 #include "ContactPointTask.hpp"
 #include <odometry/ContactOdometry.hpp>
-#include <base/eigen.h>
+#include <base/Eigen.hpp>
 
 using namespace odometry;
 
@@ -47,7 +47,7 @@ void ContactPointTask::body2imu_enuTransformerCallback(const base::Time& ts)
 }
 
 void ContactPointTask::pushState(base::Time const& ts,
-        base::odometry::Gaussian3D& odometry,
+        odometry::Gaussian3D& odometry,
         base::Quaterniond const& R_body2World,
         base::Vector3d const& velocity,
         base::Vector3d const& angular_velocity)
