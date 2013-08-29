@@ -11,15 +11,6 @@ namespace odometry
     class Gaussian3D;
 }
 
-namespace base
-{
-    template<>
-    inline base::Vector3d unknown<base::Vector3d>()
-    {
-        return base::Vector3d::Ones() * base::unknown<double>();
-    }
-}
-
 namespace odometry {
 
     /*! \class ContactPointTask 
@@ -45,12 +36,6 @@ namespace odometry {
         odometry::BodyContactState contactState;
         odometry::Configuration odometryConfiguration;
         odometry::FootContact* contactOdometry;
-
-        void pushState(base::Time const& ts,
-                odometry::Gaussian3D& odometry,
-                base::Quaterniond const& R_body2world,
-                base::Vector3d const& velocity = base::unknown<base::Vector3d>(),
-                base::Vector3d const& angular_velocity = base::unknown<base::Vector3d>());
 
         void contact_samplesTransformerCallback(const base::Time &ts, const ::odometry::BodyContactState &contact_samples_sample);
         void body2imu_enuTransformerCallback(const base::Time &ts);

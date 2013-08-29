@@ -6,6 +6,15 @@
 #include "odometry/GenericBase.hpp"
 #include <envire/Core.hpp>
 
+namespace base
+{
+    template<>
+    inline base::Vector3d unknown<base::Vector3d>()
+    {
+        return base::Vector3d::Ones() * base::unknown<double>();
+    }
+}
+
 namespace odometry {
 
     /*! \class Generic 
@@ -30,6 +39,20 @@ namespace odometry {
 	/** previous absolute odometry transformation */
 	envire::TransformWithUncertainty lastBody2Odometry;
 
+	/** 
+	 * Call this method to write the combined odometry to the
+	 * output ports.
+	 *
+	 * @param body2prevbody - current body frame to previous frame transform with error
+	 * @param R_body2world - absolute orientation from the IMU
+	 * @param velocity - optional velocity of the system
+	 * @param angular_velocity - optional angular velocity
+	 */
+        void pushState(base::Time const& ts,
+		envire::TransformWithUncertainty& body2prevbody,
+                base::Quaterniond const& R_body2world,
+                base::Vector3d const& velocity = base::unknown<base::Vector3d>(),
+                base::Vector3d const& angular_velocity = base::unknown<base::Vector3d>());
     public:
         /** TaskContext constructor for Generic
          * \param name Name of the task. This name needs to be unique to make it identifiable via nameservices.
@@ -69,7 +92,7 @@ namespace odometry {
          * stay in Stopped. Otherwise, it goes into Running and updateHook()
          * will be called.
          */
-        // bool startHook();
+        bool startHook();
 
         /** This hook is called by Orocos when the component is in the Running
          * state, at each activity step. Here, the activity gives the "ticks"
