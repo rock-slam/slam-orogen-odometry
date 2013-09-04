@@ -3,12 +3,12 @@
 #ifndef ODOMETRY_SKIDODOMETRYTASK_TASK_HPP
 #define ODOMETRY_SKIDODOMETRYTASK_TASK_HPP
 
-#include "odometry/SkidOdometryTaskBase.hpp"
+#include "odometry/SkidBase.hpp"
 #include <odometry/Odometry.hpp>
 
 namespace odometry {
 
-    /*! \class SkidOdometryTask 
+    /*! \class Skid 
      * \brief The task context provides and requires services. It uses an ExecutionEngine to perform its functions.
      * Essential interfaces are operations, data flow ports and properties. These interfaces have been defined using the oroGen specification.
      * In order to modify the interfaces you should (re)use oroGen and rely on the associated workflow.
@@ -17,14 +17,14 @@ namespace odometry {
      * The name of a TaskContext is primarily defined via:
      \verbatim
      deployment 'deployment_name'
-         task('custom_task_name','odometry::SkidOdometryTask')
+         task('custom_task_name','odometry::Skid')
      end
      \endverbatim
      *  It can be dynamically adapted when the deployment is called with a prefix argument. 
      */
-    class SkidOdometryTask : public SkidOdometryTaskBase
+    class Skid : public SkidBase
     {
-	friend class SkidOdometryTaskBase;
+	friend class SkidBase;
     protected:
 
 	/** Odometry object */
@@ -40,22 +40,22 @@ namespace odometry {
         void body2imu_enuTransformerCallback(const base::Time &ts);
 
     public:
-        /** TaskContext constructor for SkidOdometryTask
+        /** TaskContext constructor for Skid
          * \param name Name of the task. This name needs to be unique to make it identifiable via nameservices.
          * \param initial_state The initial TaskState of the TaskContext. Default is Stopped state.
          */
-        SkidOdometryTask(std::string const& name = "odometry::SkidOdometryTask");
+        Skid(std::string const& name = "odometry::Skid");
 
-        /** TaskContext constructor for SkidOdometryTask 
+        /** TaskContext constructor for Skid 
          * \param name Name of the task. This name needs to be unique to make it identifiable for nameservices. 
          * \param engine The RTT Execution engine to be used for this task, which serialises the execution of all commands, programs, state machines and incoming events for a task. 
          * 
          */
-        SkidOdometryTask(std::string const& name, RTT::ExecutionEngine* engine);
+        Skid(std::string const& name, RTT::ExecutionEngine* engine);
 
-        /** Default deconstructor of SkidOdometryTask
+        /** Default deconstructor of Skid
          */
-	~SkidOdometryTask();
+	~Skid();
 
         /** This hook is called by Orocos when the state machine transitions
          * from PreOperational to Stopped. If it returns false, then the

@@ -1,24 +1,24 @@
 /* Generated from orogen/lib/orogen/templates/tasks/Task.cpp */
 
-#include "SkidOdometryTask.hpp"
+#include "Skid.hpp"
 
 using namespace odometry;
 
-SkidOdometryTask::SkidOdometryTask(std::string const& name)
-    : SkidOdometryTaskBase(name)
+Skid::Skid(std::string const& name)
+    : SkidBase(name)
 {
 }
 
-SkidOdometryTask::SkidOdometryTask(std::string const& name, RTT::ExecutionEngine* engine)
-    : SkidOdometryTaskBase(name, engine)
+Skid::Skid(std::string const& name, RTT::ExecutionEngine* engine)
+    : SkidBase(name, engine)
 {
 }
 
-SkidOdometryTask::~SkidOdometryTask()
+Skid::~Skid()
 {
 }
 
-void SkidOdometryTask::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples_sample)
+void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples_sample)
 {
     // calculate average speed of all wheels as velocity over ground
     moving_speed = 0;
@@ -27,7 +27,7 @@ void SkidOdometryTask::actuator_samplesTransformerCallback(const base::Time &ts,
     moving_speed = moving_speed / actuator_samples_sample.size() * _wheelRadiusAvg.value();
 }
 
-void SkidOdometryTask::body2imu_enuTransformerCallback(const base::Time& ts)
+void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
 {
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
@@ -59,12 +59,12 @@ void SkidOdometryTask::body2imu_enuTransformerCallback(const base::Time& ts)
 }
 
 /// The following lines are template definitions for the various state machine
-// hooks defined by Orocos::RTT. See SkidOdometryTask.hpp for more detailed
+// hooks defined by Orocos::RTT. See Skid.hpp for more detailed
 // documentation about them.
 
-bool SkidOdometryTask::configureHook()
+bool Skid::configureHook()
 {
-    if (! SkidOdometryTaskBase::configureHook())
+    if (! SkidBase::configureHook())
         return false;
 
     odometry = boost::shared_ptr<odometry::SkidOdometry>(new odometry::SkidOdometry(
@@ -73,13 +73,13 @@ bool SkidOdometryTask::configureHook()
 	    _trackWidth.get(),
 	    _wheelBase.get()));
 
-    _body2imu_enu.registerUpdateCallback(boost::bind(&SkidOdometryTask::body2imu_enuTransformerCallback, this, _1));
+    _body2imu_enu.registerUpdateCallback(boost::bind(&Skid::body2imu_enuTransformerCallback, this, _1));
 
     return true;
 }
-bool SkidOdometryTask::startHook()
+bool Skid::startHook()
 {
-    if (! SkidOdometryTaskBase::startHook())
+    if (! SkidBase::startHook())
         return false;
     
     moving_speed = 0;
@@ -87,19 +87,19 @@ bool SkidOdometryTask::startHook()
 
     return true;
 }
-void SkidOdometryTask::updateHook()
+void Skid::updateHook()
 {
-    SkidOdometryTaskBase::updateHook();
+    SkidBase::updateHook();
 }
-void SkidOdometryTask::errorHook()
+void Skid::errorHook()
 {
-    SkidOdometryTaskBase::errorHook();
+    SkidBase::errorHook();
 }
-void SkidOdometryTask::stopHook()
+void Skid::stopHook()
 {
-    SkidOdometryTaskBase::stopHook();
+    SkidBase::stopHook();
 }
-void SkidOdometryTask::cleanupHook()
+void Skid::cleanupHook()
 {
-    SkidOdometryTaskBase::cleanupHook();
+    SkidBase::cleanupHook();
 }
