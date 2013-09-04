@@ -45,6 +45,7 @@ void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
 
     double dt = (ts - prev_ts).toSeconds();
     double moving_dist = moving_speed * dt;
+    prev_ts = ts;
 
     // update the odometry
     odometry->update( moving_dist, R_body2World );
