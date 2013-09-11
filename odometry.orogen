@@ -112,7 +112,7 @@ task_context 'Skid' do
     ##########################
 
     transformer() do
-	transformation("body", "imu_enu")
+	transformation("body", "imu_world")
 
 	align_port("actuator_samples", 0.001)
 	max_latency(0.1)
