@@ -61,6 +61,10 @@ void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
 	// push the transformations
 	pushState( ts, body2PrevBody, R_body2World );
     }
+    else
+    {
+	LOG_ERROR_S << "Calculation of distance moved between two time steps is NaN." << std::endl;
+    }
 }
 
 /// The following lines are template definitions for the various state machine
