@@ -47,16 +47,20 @@ void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
     double moving_dist = moving_speed * dt;
     prev_ts = ts;
 
-    // update the odometry
-    odometry->update( moving_dist, R_body2World );
+    // make sure we don't have any nans or infs flying around
+    if( std::isfinite( moving_dist ) )
+    {
+	// update the odometry
+	odometry->update( moving_dist, R_body2World );
 
-    // create a transform with uncertainty based on the odometry 
-    envire::TransformWithUncertainty body2PrevBody( 
-	    odometry->getPoseDelta().toTransform(),
-	    odometry->getPoseError() );
+	// create a transform with uncertainty based on the odometry 
+	envire::TransformWithUncertainty body2PrevBody( 
+		odometry->getPoseDelta().toTransform(),
+		odometry->getPoseError() );
 
-    // push the transformations
-    pushState( ts, body2PrevBody, R_body2World );
+	// push the transformations
+	pushState( ts, body2PrevBody, R_body2World );
+    }
 }
 
 /// The following lines are template definitions for the various state machine
