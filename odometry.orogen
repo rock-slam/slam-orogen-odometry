@@ -99,6 +99,13 @@ task_context 'Skid' do
     property('wheelBase', 'double').
 	doc 'wheel base'
 
+    property('leftWheelNames', 'std/vector<std/string>').
+	doc 'wheel base'
+
+    property('rightWheelNames', 'std/vector<std/string>').
+	doc 'wheel base'
+	
+
     ##########################
     # i/o ports 
     ##########################

@@ -18,13 +18,34 @@ Skid::~Skid()
 {
 }
 
-void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples_sample)
+void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples)
 {
     // calculate average speed of all wheels as velocity over ground
     moving_speed = 0;
-    for(size_t i=0; i<actuator_samples_sample.size(); ++i)
-	moving_speed += actuator_samples_sample[i].speed;
-    moving_speed = moving_speed / actuator_samples_sample.size() * _wheelRadiusAvg.value();
+
+
+    int numWheels = 0;
+    for(std::vector<std::string>::const_iterator it = rightWheelNames.begin();
+	it != rightWheelNames.end(); it++)
+    {
+        base::JointState const &state(actuator_samples[*it]);
+	if(!state.hasSpeed())
+	    throw std::runtime_error("Did not get needed speed value");
+	moving_speed += state.speed;
+	numWheels++;
+    }
+
+    for(std::vector<std::string>::const_iterator it = leftWheelNames.begin();
+	it != leftWheelNames.end(); it++)
+    {
+	base::JointState const &state(actuator_samples[*it]);
+	if(!state.hasSpeed())
+	    throw std::runtime_error("Did not get needed speed value");
+	moving_speed += state.speed;
+	numWheels++;
+    }
+
+    moving_speed = moving_speed / numWheels * _wheelRadiusAvg.value();
 }
 
 void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
@@ -83,6 +104,9 @@ bool Skid::configureHook()
 	    _wheelBase.get()));
 
     _body2imu_world.registerUpdateCallback(boost::bind(&Skid::body2imu_enuTransformerCallback, this, _1));
+
+    rightWheelNames = _rightWheelNames.get();
+    leftWheelNames = _leftWheelNames.get();
 
     return true;
 }
