@@ -30,7 +30,11 @@ void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::bas
     {
         base::JointState const &state(actuator_samples[*it]);
 	if(!state.hasSpeed())
+	  {
+	    moving_speed = 0;
+	    return;
 	    throw std::runtime_error("Did not get needed speed value");
+	  }
 	moving_speed += state.speed;
 	numWheels++;
     }
@@ -40,7 +44,11 @@ void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::bas
     {
 	base::JointState const &state(actuator_samples[*it]);
 	if(!state.hasSpeed())
+	  {
+	    moving_speed = 0;
+	    return;
 	    throw std::runtime_error("Did not get needed speed value");
+	  }
 	moving_speed += state.speed;
 	numWheels++;
     }
