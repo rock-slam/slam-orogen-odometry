@@ -20,41 +20,49 @@ Skid::~Skid()
 
 void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples)
 {
+    currentActuatorSample = actuator_samples;
+}
+
+double Skid::getMovingSpeed()
+{
     // calculate average speed of all wheels as velocity over ground
-    moving_speed = 0;
+    double moving_speed = 0;
 
 
     int numWheels = 0;
     for(std::vector<std::string>::const_iterator it = rightWheelNames.begin();
-	it != rightWheelNames.end(); it++)
+        it != rightWheelNames.end(); it++)
     {
-        base::JointState const &state(actuator_samples[*it]);
-	if(!state.hasSpeed())
-	  {
-	    moving_speed = 0;
-	    return;
-	    throw std::runtime_error("Did not get needed speed value");
-	  }
-	moving_speed += state.speed;
-	numWheels++;
+        base::JointState const &state(currentActuatorSample[*it]);
+        if(!state.hasSpeed())
+          {
+            moving_speed = 0;
+            return moving_speed;
+            throw std::runtime_error("Did not get needed speed value");
+          }
+        moving_speed += state.speed;
+        numWheels++;
     }
 
     for(std::vector<std::string>::const_iterator it = leftWheelNames.begin();
-	it != leftWheelNames.end(); it++)
+        it != leftWheelNames.end(); it++)
     {
-	base::JointState const &state(actuator_samples[*it]);
-	if(!state.hasSpeed())
-	  {
-	    moving_speed = 0;
-	    return;
-	    throw std::runtime_error("Did not get needed speed value");
-	  }
-	moving_speed += state.speed;
-	numWheels++;
+        base::JointState const &state(currentActuatorSample[*it]);
+        if(!state.hasSpeed())
+          {
+            moving_speed = 0;
+            return moving_speed;
+            throw std::runtime_error("Did not get needed speed value");
+          }
+        moving_speed += state.speed;
+        numWheels++;
     }
 
-    moving_speed = moving_speed / numWheels * _wheelRadiusAvg.value();
+    moving_speed = moving_speed / numWheels * wheelRadius;
+    
+    return moving_speed;
 }
+
 
 void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
 {
@@ -89,6 +97,7 @@ void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
 
 	// push the transformations
 	pushState( ts, body2PrevBody, R_body2World );
+        double moving_speed = getMovingSpeed();
     }
     else
     {

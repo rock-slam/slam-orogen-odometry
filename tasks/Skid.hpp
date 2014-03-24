@@ -33,6 +33,7 @@ namespace odometry {
 	/* time_stamp of last measurement */
 	base::Time prev_ts;
 
+        base::samples::Joints currentActuatorSample;
 	/* average distance travelled of all wheels */
 	double moving_speed;
 
@@ -42,6 +43,11 @@ namespace odometry {
         virtual void actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples_sample);
         void body2imu_enuTransformerCallback(const base::Time &ts);
 
+        /** 
+         * returns the average moving speed of the robot at the current time
+         */
+        double getMovingSpeed();
+        double wheelRadius;
     public:
         /** TaskContext constructor for Skid
          * \param name Name of the task. This name needs to be unique to make it identifiable via nameservices.
