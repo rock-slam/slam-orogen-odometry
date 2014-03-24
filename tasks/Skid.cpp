@@ -75,34 +75,44 @@ void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
     // calculates the rotation from body to world base on the orientation measurment 
     Eigen::Quaterniond R_body2World(body2IMUWorld.rotation()); 
 
-    // calculate the travelled distance based on the speed over ground
-    // and the time since the last update
-    if( prev_ts == base::Time() )
-	prev_ts = ts;
-
-    double dt = (ts - prev_ts).toSeconds();
-    double moving_dist = moving_speed * dt;
-    prev_ts = ts;
-
-    // make sure we don't have any nans or infs flying around
-    if( std::isfinite( moving_dist ) )
+    if(!usePosition)
     {
-	// update the odometry
-	odometry->update( moving_dist, R_body2World );
-
-	// create a transform with uncertainty based on the odometry 
-	envire::TransformWithUncertainty body2PrevBody( 
-		odometry->getPoseDelta().toTransform(),
-		odometry->getPoseError() );
-
-	// push the transformations
-	pushState( ts, body2PrevBody, R_body2World );
+        double moving_dist = 0;
         double moving_speed = getMovingSpeed();
+        // calculate the travelled distance based on the speed over ground
+        // and the time since the last update
+        if( prev_ts.isNull())
+            prev_ts = ts;
+
+        double dt = (ts - prev_ts).toSeconds();
+        moving_dist = moving_speed * dt;
+        prev_ts = ts;
+        
+        // make sure we don't have any nans or infs flying around
+        if( std::isfinite( moving_dist ) )
+        {
+            // update the odometry
+            odometry->update( moving_dist, R_body2World );
+        }
+        else
+        {
+            LOG_ERROR_S << "Calculation of distance moved between two time steps is NaN." << std::endl;
+            return;
+        }
     }
     else
     {
-	LOG_ERROR_S << "Calculation of distance moved between two time steps is NaN." << std::endl;
+        odometry->update(currentActuatorSample, R_body2World);
     }
+
+    // create a transform with uncertainty based on the odometry 
+    envire::TransformWithUncertainty body2PrevBody( 
+            odometry->getPoseDelta().toTransform(),
+            odometry->getPoseError() );
+
+    // push the transformations
+    pushState( ts, body2PrevBody, R_body2World );
+
 }
 
 /// The following lines are template definitions for the various state machine
@@ -114,16 +124,20 @@ bool Skid::configureHook()
     if (! SkidBase::configureHook())
         return false;
 
+    rightWheelNames = _rightWheelNames.get();
+    leftWheelNames = _leftWheelNames.get();
+
+    wheelRadius = _wheelRadiusAvg.value();
+    usePosition = _usePosition.get();
+
     odometry = boost::shared_ptr<odometry::SkidOdometry>(new odometry::SkidOdometry(
 	    _odometry_config.get(),
 	    _wheelRadiusAvg.get(),
 	    _trackWidth.get(),
-	    _wheelBase.get()));
+	    _wheelBase.get(),
+            leftWheelNames, rightWheelNames));
 
     _body2imu_world.registerUpdateCallback(boost::bind(&Skid::body2imu_enuTransformerCallback, this, _1));
-
-    rightWheelNames = _rightWheelNames.get();
-    leftWheelNames = _leftWheelNames.get();
 
     return true;
 }
@@ -132,7 +146,6 @@ bool Skid::startHook()
     if (! SkidBase::startHook())
         return false;
     
-    moving_speed = 0;
     prev_ts = base::Time();
 
     return true;

@@ -56,7 +56,7 @@ task_context 'Skid4OdometryTask' do
 	doc 'track width'
 
     property('wheelBase', 'double').
-	doc 'wheel base'
+        doc 'wheel base'
 
     ##########################
     # i/o ports 
@@ -105,6 +105,9 @@ task_context 'Skid' do
     property('rightWheelNames', 'std/vector<std/string>').
 	doc 'wheel base'
 	
+    property('usePosition', 'bool').
+        doc 'If this value is set to true, the position field of the actuator samples will be used to calculate the translation'
+
 
     ##########################
     # i/o ports 
