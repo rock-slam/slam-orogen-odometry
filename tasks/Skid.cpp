@@ -21,14 +21,15 @@ Skid::~Skid()
 void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples)
 {
     currentActuatorSample = actuator_samples;
+    actuatorUpdated = true;
 }
 
 double Skid::getMovingSpeed()
 {
+    if(!actuatorUpdated)
+        return lastMovingSpeed;
+    
     // calculate average speed of all wheels as velocity over ground
-    double moving_speed = 0;
-
-
     int numWheels = 0;
     for(std::vector<std::string>::const_iterator it = rightWheelNames.begin();
         it != rightWheelNames.end(); it++)
@@ -36,11 +37,11 @@ double Skid::getMovingSpeed()
         base::JointState const &state(currentActuatorSample[*it]);
         if(!state.hasSpeed())
           {
-            moving_speed = 0;
-            return moving_speed;
+            lastMovingSpeed = 0;
+            return lastMovingSpeed;
             throw std::runtime_error("Did not get needed speed value");
           }
-        moving_speed += state.speed;
+        lastMovingSpeed += state.speed;
         numWheels++;
     }
 
@@ -50,17 +51,18 @@ double Skid::getMovingSpeed()
         base::JointState const &state(currentActuatorSample[*it]);
         if(!state.hasSpeed())
           {
-            moving_speed = 0;
-            return moving_speed;
+            lastMovingSpeed = 0;
+            return lastMovingSpeed;
             throw std::runtime_error("Did not get needed speed value");
           }
-        moving_speed += state.speed;
+        lastMovingSpeed += state.speed;
         numWheels++;
     }
 
-    moving_speed = moving_speed / numWheels * wheelRadius;
-    
-    return moving_speed;
+    lastMovingSpeed = lastMovingSpeed / numWheels * wheelRadius;    
+    actuatorUpdated = false;
+
+    return lastMovingSpeed;
 }
 
 
@@ -147,6 +149,8 @@ bool Skid::startHook()
         return false;
     
     prev_ts = base::Time();
+    actuatorUpdated = false;
+    lastMovingSpeed = 0.0;
 
     return true;
 }

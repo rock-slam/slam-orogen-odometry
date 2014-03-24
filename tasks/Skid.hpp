@@ -34,7 +34,10 @@ namespace odometry {
 	base::Time prev_ts;
 
         base::samples::Joints currentActuatorSample;
+        bool actuatorUpdated;
+        double lastMovingSpeed;
 
+        
         std::vector<std::string> leftWheelNames;
         std::vector<std::string> rightWheelNames;
 
