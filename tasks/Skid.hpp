@@ -36,6 +36,7 @@ namespace odometry {
         base::samples::Joints currentActuatorSample;
         bool actuatorUpdated;
         double lastMovingSpeed;
+        bool gotActuatorReading;
 
         
         std::vector<std::string> leftWheelNames;

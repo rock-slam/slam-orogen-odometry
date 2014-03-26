@@ -22,6 +22,7 @@ void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::bas
 {
     currentActuatorSample = actuator_samples;
     actuatorUpdated = true;
+    gotActuatorReading = true;
 }
 
 double Skid::getMovingSpeed()
@@ -68,6 +69,10 @@ double Skid::getMovingSpeed()
 
 void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
 {
+    //we need to receive an actuator reading first
+    if(!gotActuatorReading)
+        return;
+    
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
     base::Transform3d body2IMUWorld;
@@ -151,7 +156,8 @@ bool Skid::startHook()
     prev_ts = base::Time();
     actuatorUpdated = false;
     lastMovingSpeed = 0.0;
-
+    gotActuatorReading = false;
+    
     return true;
 }
 void Skid::updateHook()
