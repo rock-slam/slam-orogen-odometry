@@ -23,10 +23,14 @@ ContactPointTask::~ContactPointTask()
 void ContactPointTask::contact_samplesTransformerCallback(const base::Time &ts, const ::odometry::BodyContactState &contact_samples_sample)
 {
     contactState = contact_samples_sample;
+    gotContactState = true;
 }
 
 void ContactPointTask::body2imu_enuTransformerCallback(const base::Time& ts)
 {
+    if(!gotContactState)
+        return;
+        
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
     base::Transform3d body2IMUWorld;
@@ -40,15 +44,12 @@ void ContactPointTask::body2imu_enuTransformerCallback(const base::Time& ts)
 
     contactOdometry->update(contactState, R_body2World);
 
-    if (contactOdometry->state.isValid())
-    {
-	// create a transform with uncertainty based on the odometry 
-	envire::TransformWithUncertainty body2PrevBody( 
-		contactOdometry->getPoseDelta().toTransform(),
-		contactOdometry->getPoseError() );
+    // create a transform with uncertainty based on the odometry 
+    envire::TransformWithUncertainty body2PrevBody( 
+            contactOdometry->getPoseDelta().toTransform(),
+            contactOdometry->getPoseError() );
 
-        pushState(ts, body2PrevBody, R_body2World);
-    }
+    pushState(ts, body2PrevBody, R_body2World);
 }
 
 /// The following lines are template definitions for the various state machine
@@ -70,6 +71,8 @@ bool ContactPointTask::startHook()
     contactOdometry = new odometry::FootContact(odometryConfiguration);
 
     _body2imu_enu.registerUpdateCallback(boost::bind(&ContactPointTask::body2imu_enuTransformerCallback, this, _1));
+    
+    gotContactState = false;
     
     return true;
 }

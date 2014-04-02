@@ -36,11 +36,14 @@ namespace odometry {
         odometry::BodyContactState contactState;
         odometry::Configuration odometryConfiguration;
         odometry::FootContact* contactOdometry;
+        bool gotContactState;
 
         void contact_samplesTransformerCallback(const base::Time &ts, const ::odometry::BodyContactState &contact_samples_sample);
         void body2imu_enuTransformerCallback(const base::Time &ts);
 
     public:
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
         /** TaskContext constructor for ContactPointTask
          * \param name Name of the task. This name needs to be unique to make it identifiable via nameservices.
          * \param initial_state The initial TaskState of the TaskContext. Default is Stopped state.
