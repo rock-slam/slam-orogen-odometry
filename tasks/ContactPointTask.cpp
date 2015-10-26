@@ -22,8 +22,17 @@ ContactPointTask::~ContactPointTask()
 
 void ContactPointTask::contact_samplesTransformerCallback(const base::Time &ts, const ::odometry::BodyContactState &contact_samples_sample)
 {
-    contactState = contact_samples_sample;
     gotContactState = true;
+    contactState = contact_samples_sample;
+    if(_body_z.connected()){
+        double body_z;
+        if(_body_z.readNewest(body_z) == RTT::NewData){
+            std::vector<BodyContactPoint>::iterator it;
+            for(it = contactState.points.begin(); it != contactState.points.end(); ++it){
+                it->position[2] = -body_z;
+            }
+        }
+    }
 }
 
 void ContactPointTask::body2imu_enuTransformerCallback(const base::Time& ts)
