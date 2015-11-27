@@ -29,7 +29,6 @@ task_context 'Generic' do
         doc "the frame name for the odometry frame"
 
     property('start_pose', '/base/samples/RigidBodyState').
-        dynamic.
         doc "starting position for odometry"
 
     ##########################
