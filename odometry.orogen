@@ -110,10 +110,10 @@ task_context 'Skid' do
     property('usePosition', 'bool', false).
         doc 'If this value is set to true, the position field of the actuator samples will be used to calculate the translation'
 
-    property('updateOnMoveOnly', 'bool', true).
+    property('updateOnMoveOnly', 'bool', false).
         doc 'If set to true, the odometry will only be updated when there is wheel movement'
 
-    property('move_threshold', 'double', 0.01).
+    property('move_threshold', 'double', 0.005).
         doc 'Threshold for wheel turning in rad/s'
 
 

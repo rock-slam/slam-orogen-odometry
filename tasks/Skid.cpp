@@ -44,13 +44,13 @@ bool Skid::isMoving(){
     for(std::vector<std::string>::const_iterator it = rightWheelNames.begin();
             it != rightWheelNames.end(); it++){
         base::JointState const &state(currentActuatorSample[*it]);
-        if(state.hasSpeed() && state.speed >= move_threshold) return true;
+        if(state.hasSpeed() && fabs(state.speed) >= move_threshold) return true;
     }
 
     for(std::vector<std::string>::const_iterator it = leftWheelNames.begin();
             it != leftWheelNames.end(); it++){
         base::JointState const &state(currentActuatorSample[*it]);
-        if(state.hasSpeed() && state.speed >= move_threshold) return true;
+        if(state.hasSpeed() && fabs(state.speed) >= move_threshold) return true;
     }
 
     return false;
