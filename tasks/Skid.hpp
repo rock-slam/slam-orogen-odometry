@@ -37,7 +37,6 @@ namespace odometry {
         bool actuatorUpdated;
         double lastMovingSpeed;
         bool gotActuatorReading;
-
         
         std::vector<std::string> leftWheelNames;
         std::vector<std::string> rightWheelNames;
@@ -50,8 +49,11 @@ namespace odometry {
          * returns the average moving speed of the robot at the current time
          */
         double getMovingSpeed();
+        bool isMoving();
         double wheelRadius;
         bool usePosition;        
+        bool updateOnMoveOnly;
+        double move_threshold;
     public:
         /** TaskContext constructor for Skid
          * \param name Name of the task. This name needs to be unique to make it identifiable via nameservices.

@@ -40,6 +40,23 @@ void Skid::printInvalidSample()
     std::cerr << "    " << s2.str() << std::endl;
 }
 
+bool Skid::isMoving(){
+    for(std::vector<std::string>::const_iterator it = rightWheelNames.begin();
+            it != rightWheelNames.end(); it++){
+        base::JointState const &state(currentActuatorSample[*it]);
+        if(state.hasSpeed() && state.speed >= move_threshold) return true;
+    }
+
+    for(std::vector<std::string>::const_iterator it = leftWheelNames.begin();
+            it != leftWheelNames.end(); it++){
+        base::JointState const &state(currentActuatorSample[*it]);
+        if(state.hasSpeed() && state.speed >= move_threshold) return true;
+    }
+
+    return false;
+}
+
+
 double Skid::getMovingSpeed()
 {
     if(!actuatorUpdated)
@@ -96,6 +113,8 @@ void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
     //we need to receive an actuator reading first
     if(!gotActuatorReading)
         return;
+
+    if(_updateOnMoveOnly && !isMoving()) return;
     
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
@@ -176,6 +195,8 @@ bool Skid::configureHook()
 
     wheelRadius = _wheelRadiusAvg.value();
     usePosition = _usePosition.get();
+    updateOnMoveOnly = _updateOnMoveOnly.get();
+    move_threshold = _move_threshold.get();
 
     odometry = boost::shared_ptr<odometry::SkidOdometry>(new odometry::SkidOdometry(
 	    _odometry_config.get(),

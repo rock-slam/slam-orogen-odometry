@@ -107,8 +107,14 @@ task_context 'Skid' do
     property('rightWheelNames', 'std/vector<std/string>').
 	doc 'wheel base'
 	
-    property('usePosition', 'bool').
+    property('usePosition', 'bool', false).
         doc 'If this value is set to true, the position field of the actuator samples will be used to calculate the translation'
+
+    property('updateOnMoveOnly', 'bool', true).
+        doc 'If set to true, the odometry will only be updated when there is wheel movement'
+
+    property('move_threshold', 'double', 0.01).
+        doc 'Threshold for wheel turning in rad/s'
 
 
     ##########################
