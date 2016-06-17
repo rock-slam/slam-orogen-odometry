@@ -43,47 +43,6 @@ task_context 'Generic' do
 
 end
 
-task_context 'Skid4OdometryTask' do
-    doc "normal skid-steering odometry"
-    subclasses "Generic"
-
-    ##########################
-    # configuration parameters 
-    ##########################
-
-    property('wheelRadiusAvg', 'double').
-	doc 'wheel radius avarage'
-
-    property('trackWidth', 'double').
-	doc 'track width'
-
-    property('wheelBase', 'double').
-        doc 'wheel base'
-
-    ##########################
-    # i/o ports 
-    ##########################
-
-    input_port('actuator_samples', '/base/actuators/Status').
-        needs_reliable_connection.
-	doc 'timestamped motor state samples providing odometry information.'
-   
-    output_port('bodystate_samples', '/odometry/BodyState').
-	doc 'timestamped robot bodystate information'
-
-    ##########################
-    # aggregator parameters
-    ##########################
-
-    transformer() do
-	transformation("body", "imu_enu")
-
-	align_port("actuator_samples", 0.001)
-	max_latency(0.1)
-    end
-    port_driven 'dynamic_transformations'
-end
-
 task_context 'Skid' do
     doc "normal skid-steering odometry for any number of skid steering wheels"
     subclasses "Generic"
