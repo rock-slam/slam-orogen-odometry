@@ -43,7 +43,7 @@ task_context 'Generic' do
 
 end
 
-task_context 'SkidLateral' do
+task_context 'LatOdom' do
     doc "Advanced skid-steering odometry for any number of omnidirectional skid steering wheels able to drive lateral"
     subclasses "Generic"
 

@@ -1,32 +1,32 @@
 /* Generated from orogen/lib/orogen/templates/tasks/Task.cpp */
 
-#include "SkidLateral.hpp"
+#include "LatOdom.hpp"
 #include <sstream>
 
 using namespace odometry;
 
-SkidLateral::SkidLateral(std::string const& name)
-    : SkidLateralBase(name)
+LatOdom::LatOdom(std::string const& name)
+    : LatOdomBase(name)
 {
 }
 
-SkidLateral::SkidLateral(std::string const& name, RTT::ExecutionEngine* engine)
-    : SkidLateralBase(name, engine)
+LatOdom::LatOdom(std::string const& name, RTT::ExecutionEngine* engine)
+    : LatOdomBase(name, engine)
 {
 }
 
-SkidLateral::~SkidLateral()
+LatOdom::~LatOdom()
 {
 }
 
-void SkidLateral::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples)
+void LatOdom::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples)
 {
     currentActuatorSample = actuator_samples;
     actuatorUpdated = true;
     gotActuatorReading = true;
 }
 
-void SkidLateral::printInvalidSample()
+void LatOdom::printInvalidSample()
 {
     std::cerr << "Invalid actuator sample:" << std::endl;
     std::cerr << "  Expected the following joint names:" << std::endl;
@@ -42,7 +42,7 @@ void SkidLateral::printInvalidSample()
     std::cerr << "    " << s2.str() << std::endl;
 }
 
-void SkidLateral::body2imu_enuTransformerCallback(const base::Time& ts)
+void LatOdom::body2imu_enuTransformerCallback(const base::Time& ts)
 {
     //we need to receive an actuator reading first
     if(!gotActuatorReading)
@@ -78,12 +78,12 @@ void SkidLateral::body2imu_enuTransformerCallback(const base::Time& ts)
 }
 
 /// The following lines are template definitions for the various state machine
-// hooks defined by Orocos::RTT. See SkidLateral.hpp for more detailed
+// hooks defined by Orocos::RTT. See LatOdom.hpp for more detailed
 // documentation about them.
 
-bool SkidLateral::configureHook()
+bool LatOdom::configureHook()
 {
-    if (! SkidLateralBase::configureHook())
+    if (! LatOdomBase::configureHook())
         return false;
 
     rightWheelNames = _rightWheelNames.get();
@@ -101,13 +101,13 @@ bool SkidLateral::configureHook()
             _wheelBase.get(),
             leftWheelNames, rightWheelNames, leftSteeringNames, rightSteeringNames));
 
-    _body2imu_world.registerUpdateCallback(boost::bind(&SkidLateral::body2imu_enuTransformerCallback, this, _1));
+    _body2imu_world.registerUpdateCallback(boost::bind(&LatOdom::body2imu_enuTransformerCallback, this, _1));
 
     return true;
 }
-bool SkidLateral::startHook()
+bool LatOdom::startHook()
 {
-    if (! SkidLateralBase::startHook())
+    if (! LatOdomBase::startHook())
         return false;
     
     prev_ts = base::Time();
@@ -116,19 +116,19 @@ bool SkidLateral::startHook()
     
     return true;
 }
-void SkidLateral::updateHook()
+void LatOdom::updateHook()
 {
-    SkidLateralBase::updateHook();
+    LatOdomBase::updateHook();
 }
-void SkidLateral::errorHook()
+void LatOdom::errorHook()
 {
-    SkidLateralBase::errorHook();
+    LatOdomBase::errorHook();
 }
-void SkidLateral::stopHook()
+void LatOdom::stopHook()
 {
-    SkidLateralBase::stopHook();
+    LatOdomBase::stopHook();
 }
-void SkidLateral::cleanupHook()
+void LatOdom::cleanupHook()
 {
-    SkidLateralBase::cleanupHook();
+    LatOdomBase::cleanupHook();
 }

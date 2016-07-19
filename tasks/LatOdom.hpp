@@ -3,12 +3,12 @@
 #ifndef ODOMETRY_SKIDLATERAL_TASK_HPP
 #define ODOMETRY_SKIDLATERAL_TASK_HPP
 
-#include "odometry/SkidLateralBase.hpp"
+#include "odometry/LatOdomBase.hpp"
 #include <odometry/Odometry.hpp>
 
 namespace odometry{
 
-    /*! \class SkidLateral
+    /*! \class LatOdom
      * \brief The task context provides and requires services. It uses an ExecutionEngine to perform its functions.
      * Essential interfaces are operations, data flow ports and properties. These interfaces have been defined using the oroGen specification.
      * In order to modify the interfaces you should (re)use oroGen and rely on the associated workflow.
@@ -17,14 +17,14 @@ namespace odometry{
      * The name of a TaskContext is primarily defined via:
      \verbatim
      deployment 'deployment_name'
-         task('custom_task_name','odometry::SkidLateral')
+         task('custom_task_name','odometry::LatOdom')
      end
      \endverbatim
      *  It can be dynamically adapted when the deployment is called with a prefix argument.
      */
-    class SkidLateral : public SkidLateralBase
+    class LatOdom : public LatOdomBase
     {
-        friend class SkidLateralBase;
+        friend class LatOdomBase;
     protected:
 
         /** Odometry object */
@@ -50,22 +50,22 @@ namespace odometry{
         virtual void actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples_sample);
 
     public:
-        /** TaskContext constructor for SkidLateral
+        /** TaskContext constructor for LatOdom
          * \param name Name of the task. This name needs to be unique to make it identifiable via nameservices.
          * \param initial_state The initial TaskState of the TaskContext. Default is Stopped state.
          */
-        SkidLateral(std::string const& name = "odometry::SkidLateral");
+        LatOdom(std::string const& name = "odometry::LatOdom");
 
-        /** TaskContext constructor for SkidLateral
+        /** TaskContext constructor for LatOdom
          * \param name Name of the task. This name needs to be unique to make it identifiable for nameservices.
          * \param engine The RTT Execution engine to be used for this task, which serialises the execution of all commands, programs, state machines and incoming events for a task.
          * 
          */
-        SkidLateral(std::string const& name, RTT::ExecutionEngine* engine);
+        LatOdom(std::string const& name, RTT::ExecutionEngine* engine);
 
-        /** Default deconstructor of SkidLateral
+        /** Default deconstructor of LatOdom
          */
-        ~SkidLateral();
+        ~LatOdom();
 
         /** This hook is called by Orocos when the state machine transitions
          * from PreOperational to Stopped. If it returns false, then the
