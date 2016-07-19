@@ -43,6 +43,58 @@ task_context 'Generic' do
 
 end
 
+task_context 'LatOdom' do
+    doc "Advanced skid-steering odometry for any number of omnidirectional skid steering wheels able to drive lateral"
+    subclasses "Generic"
+
+    ##########################
+    # configuration parameters 
+    ##########################
+
+    property('wheelRadiusAvg', 'double').
+        doc 'wheel radius avarage'
+
+    property('trackWidth', 'double').
+        doc 'track width'
+
+    property('wheelBase', 'double').
+        doc 'wheel base'
+
+    property('leftWheelNames', 'std/vector<std/string>').
+        doc 'left wheel jointnames'
+
+    property('rightWheelNames', 'std/vector<std/string>').
+        doc 'right wheel jointnames'
+    
+    property('leftSteeringNames', 'std/vector<std/string>').
+        doc 'left steering jointnames'
+
+    property('rightSteeringNames', 'std/vector<std/string>').
+        doc 'right steering jointnames'
+    
+
+    ##########################
+    # i/o ports 
+    ##########################
+
+    input_port('actuator_samples', '/base/samples/Joints').
+        needs_reliable_connection.
+        doc 'timestamped motor state samples providing also steering odometry information.'
+       
+
+    ##########################
+    # aggregator parameters
+    ##########################
+
+    transformer() do
+        transformation("body", "imu_world")
+
+        align_port("actuator_samples", 0.001)
+        max_latency(0.1)
+    end
+    port_driven 'dynamic_transformations'
+end
+
 task_context 'Skid' do
     doc "normal skid-steering odometry for any number of skid steering wheels"
     subclasses "Generic"
@@ -52,20 +104,20 @@ task_context 'Skid' do
     ##########################
 
     property('wheelRadiusAvg', 'double').
-	doc 'wheel radius avarage'
+        doc 'wheel radius avarage'
 
     property('trackWidth', 'double').
-	doc 'track width'
+        doc 'track width'
 
     property('wheelBase', 'double').
-	doc 'wheel base'
+        doc 'wheel base'
 
     property('leftWheelNames', 'std/vector<std/string>').
-	doc 'wheel base'
+        doc 'wheel base'
 
     property('rightWheelNames', 'std/vector<std/string>').
-	doc 'wheel base'
-	
+        doc 'wheel base'
+        
     property('usePosition', 'bool').
         doc 'If this value is set to true, the position field of the actuator samples will be used to calculate the translation'
 
@@ -76,17 +128,17 @@ task_context 'Skid' do
 
     input_port('actuator_samples', '/base/samples/Joints').
         needs_reliable_connection.
-	doc 'timestamped motor state samples providing odometry information.'
+        doc 'timestamped motor state samples providing odometry information.'
 
     ##########################
     # aggregator parameters
     ##########################
 
     transformer() do
-	transformation("body", "imu_world")
+        transformation("body", "imu_world")
 
-	align_port("actuator_samples", 0.001)
-	max_latency(0.1)
+        align_port("actuator_samples", 0.001)
+        max_latency(0.1)
     end
     port_driven 'dynamic_transformations'
 end
