@@ -36,14 +36,12 @@ namespace odometry {
         base::samples::Joints currentActuatorSample;
         bool actuatorUpdated;
         double lastMovingSpeed;
-        bool gotActuatorReading;
 
         
         std::vector<std::string> leftWheelNames;
         std::vector<std::string> rightWheelNames;
 
         virtual void actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples_sample);
-        void body2imu_enuTransformerCallback(const base::Time &ts);
         void printInvalidSample();
         
         /** 
