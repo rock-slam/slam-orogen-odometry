@@ -19,13 +19,6 @@ Skid::~Skid()
 {
 }
 
-void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples)
-{
-    currentActuatorSample = actuator_samples;
-    actuatorUpdated = true;
-    gotActuatorReading = true;
-}
-
 void Skid::printInvalidSample()
 {
     std::cerr << "Invalid actuator sample:" << std::endl;
@@ -91,11 +84,10 @@ double Skid::getMovingSpeed()
 }
 
 
-void Skid::imu_body2imu_worldTransformerCallback(const base::Time& ts)
+void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const base::samples::Joints &actuator_samples)
 {
-    //we need to receive an actuator reading first
-    if(!gotActuatorReading)
-        return;
+    currentActuatorSample = actuator_samples;
+    actuatorUpdated = true;
     
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
@@ -194,7 +186,6 @@ bool Skid::startHook()
     prev_ts = base::Time();
     actuatorUpdated = false;
     lastMovingSpeed = 0.0;
-    gotActuatorReading = false;
     
     return true;
 }

@@ -35,7 +35,7 @@ namespace odometry{
 
         base::samples::Joints currentActuatorSample;
         bool actuatorUpdated;
-        bool gotActuatorReading = false, gotSteeringActuatorReading = false;
+        bool gotSteeringActuatorReading = false;
 
         
         std::vector<std::string> leftWheelNames;
@@ -43,7 +43,6 @@ namespace odometry{
         std::vector<std::string> leftSteeringNames;
         std::vector<std::string> rightSteeringNames;
         
-        void imu_body2imu_worldTransformerCallback(const base::Time &ts);
         void printInvalidSample();
         double wheelRadius;
         

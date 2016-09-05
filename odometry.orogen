@@ -86,7 +86,7 @@ task_context 'LatOdom' do
     # aggregator parameters
     ##########################
 
-    transformer() do
+    transformer do
         transformation("imu_body", "imu_world")
 
         align_port("actuator_samples", 0.001)
@@ -135,7 +135,7 @@ task_context 'Skid' do
     # aggregator parameters
     ##########################
 
-    transformer() do
+    transformer do
         transformation("imu_body", "imu_world")
 
         align_port("actuator_samples", 0.001)

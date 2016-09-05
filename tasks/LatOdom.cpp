@@ -23,30 +23,6 @@ void LatOdom::actuator_samplesTransformerCallback(const base::Time &ts, const ::
 {
     currentActuatorSample = actuator_samples;
     actuatorUpdated = true;
-    gotActuatorReading = true;
-}
-
-void LatOdom::printInvalidSample()
-{
-    std::cerr << "Invalid actuator sample:" << std::endl;
-    std::cerr << "  Expected the following joint names:" << std::endl;
-    std::stringstream s;
-    std::copy(leftWheelNames.begin(),leftWheelNames.end(), std::ostream_iterator<std::string>(s,", "));
-    std::copy(rightWheelNames.begin(),rightWheelNames.end(), std::ostream_iterator<std::string>(s,", "));
-    std::copy(leftSteeringNames.begin(),leftSteeringNames.end(), std::ostream_iterator<std::string>(s,", "));
-    std::copy(rightSteeringNames.begin(),rightSteeringNames.end(), std::ostream_iterator<std::string>(s,", "));
-    std::cerr << "    " << s.str() << std::endl;
-    std::cerr << "  But got the following joint names:" << std::endl;
-    std::stringstream s2;
-    std::copy(currentActuatorSample.names.begin(),currentActuatorSample.names.end(), std::ostream_iterator<std::string>(s2,", "));
-    std::cerr << "    " << s2.str() << std::endl;
-}
-
-void LatOdom::imu_body2imu_worldTransformerCallback(const base::Time& ts)
-{
-    //we need to receive an actuator reading first
-    if(!gotActuatorReading)
-        return;
     
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
@@ -74,7 +50,22 @@ void LatOdom::imu_body2imu_worldTransformerCallback(const base::Time& ts)
 
     // push the transformations
     pushState( ts, body2PrevBody, R_body2World );
+}
 
+void LatOdom::printInvalidSample()
+{
+    std::cerr << "Invalid actuator sample:" << std::endl;
+    std::cerr << "  Expected the following joint names:" << std::endl;
+    std::stringstream s;
+    std::copy(leftWheelNames.begin(),leftWheelNames.end(), std::ostream_iterator<std::string>(s,", "));
+    std::copy(rightWheelNames.begin(),rightWheelNames.end(), std::ostream_iterator<std::string>(s,", "));
+    std::copy(leftSteeringNames.begin(),leftSteeringNames.end(), std::ostream_iterator<std::string>(s,", "));
+    std::copy(rightSteeringNames.begin(),rightSteeringNames.end(), std::ostream_iterator<std::string>(s,", "));
+    std::cerr << "    " << s.str() << std::endl;
+    std::cerr << "  But got the following joint names:" << std::endl;
+    std::stringstream s2;
+    std::copy(currentActuatorSample.names.begin(),currentActuatorSample.names.end(), std::ostream_iterator<std::string>(s2,", "));
+    std::cerr << "    " << s2.str() << std::endl;
 }
 
 /// The following lines are template definitions for the various state machine
@@ -110,7 +101,6 @@ bool LatOdom::startHook()
     
     prev_ts = base::Time();
     actuatorUpdated = false;
-    gotActuatorReading = false;
     
     return true;
 }
