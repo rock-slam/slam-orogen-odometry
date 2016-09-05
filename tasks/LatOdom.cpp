@@ -42,7 +42,7 @@ void LatOdom::printInvalidSample()
     std::cerr << "    " << s2.str() << std::endl;
 }
 
-void LatOdom::body2imu_enuTransformerCallback(const base::Time& ts)
+void LatOdom::imu_body2imu_worldTransformerCallback(const base::Time& ts)
 {
     //we need to receive an actuator reading first
     if(!gotActuatorReading)
@@ -51,7 +51,7 @@ void LatOdom::body2imu_enuTransformerCallback(const base::Time& ts)
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
     base::Transform3d body2IMUWorld;
-    if( !_body2imu_world.get( ts, body2IMUWorld ) )
+    if( !_imu_body2imu_world.get( ts, body2IMUWorld ) )
         return;
 
     // calculates the rotation from body to world base on the orientation measurment 
@@ -100,8 +100,6 @@ bool LatOdom::configureHook()
             _trackWidth.get(),
             _wheelBase.get(),
             leftWheelNames, rightWheelNames, leftSteeringNames, rightSteeringNames));
-
-    _body2imu_world.registerUpdateCallback(boost::bind(&LatOdom::body2imu_enuTransformerCallback, this, _1));
 
     return true;
 }

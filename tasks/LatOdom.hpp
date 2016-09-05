@@ -43,7 +43,7 @@ namespace odometry{
         std::vector<std::string> leftSteeringNames;
         std::vector<std::string> rightSteeringNames;
         
-        void body2imu_enuTransformerCallback(const base::Time &ts);
+        void imu_body2imu_worldTransformerCallback(const base::Time &ts);
         void printInvalidSample();
         double wheelRadius;
         

@@ -91,7 +91,7 @@ double Skid::getMovingSpeed()
 }
 
 
-void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
+void Skid::imu_body2imu_worldTransformerCallback(const base::Time& ts)
 {
     //we need to receive an actuator reading first
     if(!gotActuatorReading)
@@ -100,7 +100,7 @@ void Skid::body2imu_enuTransformerCallback(const base::Time& ts)
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
     base::Transform3d body2IMUWorld;
-    if( !_body2imu_world.get( ts, body2IMUWorld ) )
+    if( !_imu_body2imu_world.get( ts, body2IMUWorld ) )
 	return;
 
     // calculates the rotation from body to world base on the orientation measurment 
@@ -183,8 +183,6 @@ bool Skid::configureHook()
 	    _trackWidth.get(),
 	    _wheelBase.get(),
             leftWheelNames, rightWheelNames));
-
-    _body2imu_world.registerUpdateCallback(boost::bind(&Skid::body2imu_enuTransformerCallback, this, _1));
 
     return true;
 }

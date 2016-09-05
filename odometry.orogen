@@ -87,7 +87,7 @@ task_context 'LatOdom' do
     ##########################
 
     transformer() do
-        transformation("body", "imu_world")
+        transformation("imu_body", "imu_world")
 
         align_port("actuator_samples", 0.001)
         max_latency(0.1)
@@ -130,12 +130,13 @@ task_context 'Skid' do
         needs_reliable_connection.
         doc 'timestamped motor state samples providing odometry information.'
 
+
     ##########################
     # aggregator parameters
     ##########################
 
     transformer() do
-        transformation("body", "imu_world")
+        transformation("imu_body", "imu_world")
 
         align_port("actuator_samples", 0.001)
         max_latency(0.1)
