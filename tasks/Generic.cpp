@@ -56,8 +56,8 @@ void Generic::pushState(base::Time const& ts,
     cov.topRightCorner<3,3>().setZero();
     lastBody2Odometry.setCovariance( cov );
 
-    state.sourceFrame = _body_frame.get();
-    state.targetFrame = _odometry_frame.get();
+    state.sourceFrame = _body_frame_output_name.get();
+    state.targetFrame = _odometry_frame_output_name.get();
     lastBody2Odometry.copyToRigidBodyState( state );
 
     // write to port for summed odometry readings

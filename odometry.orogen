@@ -22,10 +22,10 @@ task_context 'Generic' do
     property('odometry_config', '/odometry/Configuration').
 	doc 'configuration struct for the asguard odometry class'
 
-    property('body_frame', '/std/string', 'body').
+    property('body_frame_output_name', '/std/string', 'body').
         doc "the frame name for the body frame"
 
-    property('odometry_frame', '/std/string', 'odometry').
+    property('odometry_frame_output_name', '/std/string', 'odometry').
         doc "the frame name for the odometry frame"
 
     property('start_pose', '/base/samples/RigidBodyState').
