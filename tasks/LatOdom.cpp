@@ -19,13 +19,6 @@ LatOdom::~LatOdom()
 {
 }
 
-void LatOdom::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples)
-{
-    currentActuatorSample = actuator_samples;
-    actuatorUpdated = true;
-    gotActuatorReading = true;
-}
-
 void LatOdom::printInvalidSample()
 {
     std::cerr << "Invalid actuator sample:" << std::endl;
@@ -42,12 +35,11 @@ void LatOdom::printInvalidSample()
     std::cerr << "    " << s2.str() << std::endl;
 }
 
-void LatOdom::body2imu_enuTransformerCallback(const base::Time& ts)
+void LatOdom::actuator_samplesTransformerCallback(const base::Time &ts, const ::base::samples::Joints &actuator_samples)
 {
-    //we need to receive an actuator reading first
-    if(!gotActuatorReading)
-        return;
-    
+    currentActuatorSample = actuator_samples;
+    actuatorUpdated = true;
+
     // use the transformer to get the body2world transformation 
     // this should include the imu reading
     base::Transform3d body2IMUWorld;
@@ -74,7 +66,6 @@ void LatOdom::body2imu_enuTransformerCallback(const base::Time& ts)
 
     // push the transformations
     pushState( ts, body2PrevBody, R_body2World );
-
 }
 
 /// The following lines are template definitions for the various state machine
@@ -101,8 +92,6 @@ bool LatOdom::configureHook()
             _wheelBase.get(),
             leftWheelNames, rightWheelNames, leftSteeringNames, rightSteeringNames));
 
-    _body2imu_world.registerUpdateCallback(boost::bind(&LatOdom::body2imu_enuTransformerCallback, this, _1));
-
     return true;
 }
 bool LatOdom::startHook()
@@ -112,7 +101,6 @@ bool LatOdom::startHook()
     
     prev_ts = base::Time();
     actuatorUpdated = false;
-    gotActuatorReading = false;
     
     return true;
 }
