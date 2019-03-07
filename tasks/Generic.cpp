@@ -5,12 +5,12 @@
 using namespace odometry;
 
 Generic::Generic(std::string const& name)
-    : GenericBase(name), is_start_rbs_set(false)
+    : GenericBase(name)
 {
 }
 
 Generic::Generic(std::string const& name, RTT::ExecutionEngine* engine)
-    : GenericBase(name, engine), is_start_rbs_set(false)
+    : GenericBase(name, engine)
 {
 }
 
@@ -19,7 +19,7 @@ Generic::~Generic()
 }
 
 void Generic::pushState(base::Time const& ts,
-	envire::TransformWithUncertainty& body2PrevBody,
+	base::TransformWithCovariance& body2PrevBody,
 	base::Quaterniond const& R_body2World,
         base::Vector3d const& velocity,
         base::Vector3d const& angular_velocity)
@@ -28,7 +28,9 @@ void Generic::pushState(base::Time const& ts,
     base::samples::RigidBodyState state;
     state.invalidate();
     state.time = ts;
-    body2PrevBody.copyToRigidBodyState( state );
+    state.setTransform(body2PrevBody.getTransform());
+    state.cov_position = body2PrevBody.getTranslationCov();
+    state.cov_orientation = body2PrevBody.getOrientationCov();
     state.angular_velocity = angular_velocity;
     state.velocity = velocity;
 
@@ -56,9 +58,11 @@ void Generic::pushState(base::Time const& ts,
     cov.topRightCorner<3,3>().setZero();
     lastBody2Odometry.setCovariance( cov );
 
-    state.sourceFrame = _body_frame.get();
-    state.targetFrame = _odometry_frame.get();
-    lastBody2Odometry.copyToRigidBodyState( state );
+    state.sourceFrame = _body_frame_output_name.get();
+    state.targetFrame = _odometry_frame_output_name.get();
+    state.setTransform(lastBody2Odometry.getTransform());
+    state.cov_position = lastBody2Odometry.getTranslationCov();
+    state.cov_orientation = lastBody2Odometry.getOrientationCov();
 
     // write to port for summed odometry readings
     _odometry_samples.write( state );
@@ -74,22 +78,25 @@ void Generic::pushState(base::Time const& ts,
 //         return false;
 //     return true;
 // }
+
 bool Generic::startHook()
 {
-    if (! GenericBase::startHook())
+    if (!GenericBase::startHook())
         return false;
-
-     // reset absolute odometry integration
-     //lastBody2Odometry = envire::TransformWithUncertainty::Identity();
-
-    //printf("[Odoemtry] starting with %g/%g/%g\n", start_rbs.position[0], start_rbs.position[1], start_rbs.position[2]);
-    if (is_start_rbs_set == true)
-        lastBody2Odometry = envire::TransformWithUncertainty(start_rbs);
-    else 
-        lastBody2Odometry = envire::TransformWithUncertainty::Identity();
-
+    if(_start_pose.value().hasValidPosition() || _start_pose.value().hasValidOrientation())
+    {
+        base::samples::RigidBodyState temp = _start_pose.value();
+        if(!temp.hasValidPosition())
+            temp.position = base::Vector3d(0,0,0);
+        if(!temp.hasValidOrientation())
+            temp.orientation = base::Orientation(1,0,0,0);
+        lastBody2Odometry = base::TransformWithCovariance(temp);
+    }
+    else
+        lastBody2Odometry = base::TransformWithCovariance::Identity();
     return true;
 }
+
 // void Generic::updateHook()
 // {
 //     GenericBase::updateHook();
@@ -106,12 +113,3 @@ bool Generic::startHook()
 // {
 //     GenericBase::cleanupHook();
 // }
-
-bool Generic::setStart_pose(::base::samples::RigidBodyState const & value)
-{
-    is_start_rbs_set = true;
-
-    start_rbs = value;
-    //printf("[Odometry] changed start pos to %g/%g/%g\n", start_rbs.position[0], start_rbs.position[1], start_rbs.position[2]);
-    return(odometry::GenericBase::setStart_pose(value));
-}

@@ -54,7 +54,7 @@ void ContactPointTask::body2imu_enuTransformerCallback(const base::Time& ts)
     contactOdometry->update(contactState, R_body2World);
 
     // create a transform with uncertainty based on the odometry 
-    envire::TransformWithUncertainty body2PrevBody( 
+    base::TransformWithCovariance body2PrevBody( 
             contactOdometry->getPoseDelta().toTransform(),
             contactOdometry->getPoseError() );
 
