@@ -160,6 +160,12 @@ void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const base:
 
 bool Skid::configureHook()
 {
+    if(_body_frame.get() != _body_frame_output_name.get()) {
+        LOG_ERROR("body_frame(%s) does not match body_frame_output_name(%s)\n"
+            "This only worked if they are the same frame with a different name");
+        return false;
+    }
+
     if (! SkidBase::configureHook())
         return false;
 

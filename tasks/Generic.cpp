@@ -58,6 +58,8 @@ void Generic::pushState(base::Time const& ts,
     cov.topRightCorner<3,3>().setZero();
     lastBody2Odometry.setCovariance( cov );
 
+    // TODO replace _body_frame_output_name.get() with a variable set by the
+    // subclassing task from their _body_frame.
     state.sourceFrame = _body_frame_output_name.get();
     state.targetFrame = _odometry_frame_output_name.get();
     state.setTransform(lastBody2Odometry.getTransform());

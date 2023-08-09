@@ -74,6 +74,12 @@ void LatOdom::actuator_samplesTransformerCallback(const base::Time &ts, const ::
 
 bool LatOdom::configureHook()
 {
+    if(_body_frame.get() != _body_frame_output_name.get()) {
+        LOG_ERROR("body_frame(%s) does not match body_frame_output_name(%s)\n"
+            "This only worked if they are the same frame with a different name");
+        return false;
+    }
+
     if (! LatOdomBase::configureHook())
         return false;
 
