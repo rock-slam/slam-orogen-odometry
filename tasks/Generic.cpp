@@ -21,6 +21,7 @@ Generic::~Generic()
 void Generic::pushState(base::Time const& ts,
 	base::TransformWithCovariance& body2PrevBody,
 	base::Quaterniond const& R_body2World,
+        std::string const &body_frame_name,
         base::Vector3d const& velocity,
         base::Vector3d const& angular_velocity)
 {
@@ -58,9 +59,7 @@ void Generic::pushState(base::Time const& ts,
     cov.topRightCorner<3,3>().setZero();
     lastBody2Odometry.setCovariance( cov );
 
-    // TODO replace _body_frame_output_name.get() with a variable set by the
-    // subclassing task from their _body_frame.
-    state.sourceFrame = _body_frame_output_name.get();
+    state.sourceFrame = body_frame_name;
     state.targetFrame = _odometry_frame_output_name.get();
     state.setTransform(lastBody2Odometry.getTransform());
     state.cov_position = lastBody2Odometry.getTranslationCov();

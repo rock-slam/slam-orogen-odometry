@@ -51,6 +51,7 @@ namespace odometry {
         void pushState(base::Time const& ts,
 		base::TransformWithCovariance& body2prevbody,
                 base::Quaterniond const& R_body2world,
+                std::string const &body_frame_name,
                 base::Vector3d const& velocity = base::unknown<base::Vector3d>(),
                 base::Vector3d const& angular_velocity = base::unknown<base::Vector3d>());
     public:

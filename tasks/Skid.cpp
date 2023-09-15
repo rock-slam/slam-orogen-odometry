@@ -150,7 +150,7 @@ void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const base:
             odometry->getPoseError() );
 
     // push the transformations
-    pushState( ts, body2PrevBody, R_body2World );
+    pushState( ts, body2PrevBody, R_body2World, _body_frame.get() );
 
 }
 
@@ -160,10 +160,14 @@ void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const base:
 
 bool Skid::configureHook()
 {
-    if(_body_frame.get() != _body_frame_output_name.get()) {
-        LOG_ERROR("body_frame(%s) does not match body_frame_output_name(%s)\n"
-            "This only worked if they are the same frame with a different name");
-        return false;
+    if(_body_frame_output_name.get() != "") {
+        LOG_WARN("body_frame_output_name is no longer used.\n"
+            "To avoid this warning, do not set it or set it to an empty string.");
+        if(_body_frame.get() != _body_frame_output_name.get()) {
+            LOG_ERROR("body_frame(%s) does not match body_frame_output_name(%s)\n"
+                "This only worked if they are the same frame with a different name");
+            return false;
+        }
     }
 
     if (! SkidBase::configureHook())
