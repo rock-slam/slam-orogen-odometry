@@ -49,19 +49,30 @@ void ContactPointTask::body2imu_enuTransformerCallback(const base::Time& ts)
             contactOdometry->getPoseDelta().toTransform(),
             contactOdometry->getPoseError() );
 
-    pushState(ts, body2PrevBody, R_body2World);
+    pushState(ts, body2PrevBody, R_body2World, _body_frame.get());
 }
 
 /// The following lines are template definitions for the various state machine
 // hooks defined by Orocos::RTT. See ContactPointTask.hpp for more detailed
 // documentation about them.
 
-// bool ContactPointTask::configureHook()
-// {
-//     if (! ContactPointTaskBase::configureHook())
-//         return false;
-//     return true;
-// }
+bool ContactPointTask::configureHook()
+{
+    if(_body_frame_output_name.get() != "") {
+        LOG_WARN("body_frame_output_name is no longer used.\n"
+            "To avoid this warning, do not set it or set it to an empty string.");
+        if(_body_frame.get() != _body_frame_output_name.get()) {
+            LOG_ERROR("body_frame(%s) does not match body_frame_output_name(%s)\n"
+                "This only worked if they are the same frame with a different name");
+            return false;
+        }
+    }
+
+    if (! ContactPointTaskBase::configureHook())
+        return false;
+    return true;
+}
+
 bool ContactPointTask::startHook()
 {
     if (! ContactPointTaskBase::startHook())
