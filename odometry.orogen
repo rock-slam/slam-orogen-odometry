@@ -30,6 +30,9 @@ task_context 'Generic' do
     property('start_pose', '/base/samples/RigidBodyState').
         doc "starting position for odometry"
 
+    property('yaw_offset', 'double', 0.0).
+        doc "adds this yaw to the body_to_IMUWorld"
+
     ##########################
     # i/o ports 
     ##########################
@@ -168,4 +171,3 @@ task_context 'ContactPointTask' do
 
     port_driven 'dynamic_transformations'
 end
-
