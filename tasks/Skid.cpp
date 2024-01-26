@@ -97,6 +97,12 @@ void Skid::actuator_samplesTransformerCallback(const base::Time &ts, const base:
 
     // calculates the rotation from body to world base on the orientation measurment 
     Eigen::Quaterniond R_body2World(body2IMUWorld.rotation()); 
+    double yaw_offset = _yaw_offset.get();
+    if( yaw_offset != 0 )
+    {
+        Eigen::AngleAxisd yaw(yaw_offset, Eigen::Vector3d::UnitZ());
+        R_body2World = yaw * R_body2World;
+    }
 
     if(!usePosition)
     {
