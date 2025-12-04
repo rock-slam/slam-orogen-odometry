@@ -38,6 +38,7 @@ namespace odometry {
 	
 	/** previous absolute odometry transformation */
 	base::TransformWithCovariance lastBody2Odometry;
+	base::samples::RigidBodyState initialPose;
 
 	/** 
 	 * Call this method to write the combined odometry to the

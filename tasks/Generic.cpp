@@ -46,8 +46,7 @@ void Generic::pushState(base::Time const& ts,
     // need to set the absolute body to world orientation from the imu
     // because of potential drift, and a missing proper initial value
     Eigen::Affine3d body2Odometry = lastBody2Odometry.getTransform();
-    body2Odometry.linear() = R_body2World.toRotationMatrix();
-
+    body2Odometry.linear() = initialPose.orientation * R_body2World.toRotationMatrix();
     lastBody2Odometry.setTransform( body2Odometry );
 
     // this will update the global rotation covariance to that of the IMU,
@@ -91,10 +90,15 @@ bool Generic::startHook()
             temp.position = base::Vector3d(0,0,0);
         if(!temp.hasValidOrientation())
             temp.orientation = base::Orientation(1,0,0,0);
+        initialPose = temp;
         lastBody2Odometry = base::TransformWithCovariance(temp);
     }
     else
+    {
+        initialPose.orientation = base::Orientation(1,0,0,0);
+        initialPose.position = base::Vector3d(0,0,0);
         lastBody2Odometry = base::TransformWithCovariance::Identity();
+    }
     return true;
 }
 
